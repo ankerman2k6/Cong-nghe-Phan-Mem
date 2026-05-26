@@ -1,0 +1,18 @@
+@{
+    ViewData["Title"] = "Product Detail";
+}
+
+<div class="text-center">
+    <h1 class="display-4">Product Detail</h1>
+
+    @if (ViewBag.IsError)
+    {
+        <div class="alert alert-danger">
+            <p>@ViewBag.Message</p>
+        </div>
+    }
+    else
+    {
+        <p class="lead">@ViewBag.Message</p>
+    }
+</div>
