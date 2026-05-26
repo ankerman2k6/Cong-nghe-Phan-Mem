@@ -1,0 +1,8 @@
+@model string
+
+<div class="text-center">
+    <h1 class="display-4">Thông tin sinh viên</h1>
+    <p class="lead">Tên sinh viên: @ViewBag.StudentName</p>
+    <p class="lead">Tuổi: @ViewData["StudentAge"]</p>
+    <p class="lead">Ngành: @Model</p>
+</div>
