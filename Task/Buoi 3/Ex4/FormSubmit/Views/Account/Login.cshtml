@@ -1,0 +1,400 @@
+@using FormSubmit.Models;
+@model LoginViewModel
+@{
+    ViewData["Title"] = "Login";
+}
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+<style>
+    /* Override layout body for login page */
+    body {
+        font-family: 'Inter', sans-serif;
+        background: linear-gradient(135deg, #fdf8f0 0%, #fef9f3 30%, #f0f7f4 70%, #fdf8f0 100%) !important;
+        margin-bottom: 0 !important;
+        min-height: 100vh;
+        position: relative;
+        overflow-x: hidden;
+    }
+
+    /* Hide default layout footer on login page */
+    footer.border-top.footer {
+        display: none;
+    }
+
+    /* Make main container fill available space */
+    .container > main {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: calc(100vh - 120px);
+        padding-bottom: 70px;
+    }
+
+    /* Decorative blobs */
+    .blob-top-right {
+        position: fixed;
+        top: -60px;
+        right: -60px;
+        width: 250px;
+        height: 250px;
+        background: linear-gradient(135deg, #ff9a56 0%, #ff6b6b 50%, #ee5a24 100%);
+        border-radius: 50%;
+        opacity: 0.7;
+        z-index: 0;
+        pointer-events: none;
+    }
+
+    .blob-bottom-left {
+        position: fixed;
+        bottom: 100px;
+        left: 40px;
+        width: 120px;
+        height: 80px;
+        background: linear-gradient(135deg, #ff9a56 0%, #ff6b6b 100%);
+        border-radius: 50% 50% 50% 20%;
+        opacity: 0.6;
+        z-index: 0;
+        transform: rotate(-15deg);
+        pointer-events: none;
+    }
+
+    .blob-accent {
+        position: fixed;
+        bottom: 130px;
+        left: 80px;
+        width: 50px;
+        height: 50px;
+        background: linear-gradient(135deg, #48c6a9 0%, #6dd5c0 100%);
+        border-radius: 50%;
+        opacity: 0.5;
+        z-index: 0;
+        pointer-events: none;
+    }
+
+    /* Main container */
+    .login-page {
+        position: relative;
+        z-index: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+        max-width: 520px;
+        padding: 20px;
+    }
+
+    /* Logo */
+    .login-logo {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 24px;
+    }
+
+    .login-logo .logo-icon {
+        width: 36px;
+        height: 36px;
+        background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 18px;
+    }
+
+    .login-logo .logo-text {
+        font-size: 22px;
+        font-weight: 800;
+        color: #2d3436;
+        letter-spacing: -0.5px;
+    }
+
+    /* Heading */
+    .login-heading {
+        font-size: 36px;
+        font-weight: 800;
+        color: #1a1a2e;
+        margin-bottom: 40px;
+        text-align: center;
+        letter-spacing: -1px;
+    }
+
+    /* Form card */
+    .login-card {
+        width: 100%;
+        background: rgba(255, 255, 255, 0.85);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border-radius: 20px;
+        padding: 40px 36px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.06), 0 2px 8px rgba(0, 0, 0, 0.04);
+        border: 1px solid rgba(255, 255, 255, 0.6);
+    }
+
+    .login-form-group {
+        margin-bottom: 24px;
+    }
+
+    .login-form-group label {
+        display: block;
+        font-size: 14px;
+        font-weight: 600;
+        color: #555;
+        margin-bottom: 8px;
+    }
+
+    .input-wrapper {
+        position: relative;
+        display: flex;
+        align-items: center;
+    }
+
+    .input-wrapper .input-icon {
+        position: absolute;
+        left: 16px;
+        color: #aaa;
+        font-size: 16px;
+        pointer-events: none;
+        transition: color 0.3s ease;
+    }
+
+    .input-wrapper input {
+        width: 100%;
+        padding: 14px 16px 14px 48px;
+        font-size: 15px;
+        font-family: 'Inter', sans-serif;
+        border: 2px solid #e8e8e8;
+        border-radius: 12px;
+        background: #fff;
+        color: #333;
+        transition: all 0.3s ease;
+        outline: none;
+    }
+
+    .input-wrapper input::placeholder {
+        color: #bbb;
+        font-weight: 400;
+    }
+
+    .input-wrapper input:focus {
+        border-color: #48c6a9;
+        box-shadow: 0 0 0 4px rgba(72, 198, 169, 0.1);
+    }
+
+    /* When input is focused, change sibling icon color */
+    .input-wrapper:focus-within .input-icon {
+        color: #48c6a9;
+    }
+
+    /* Submit button */
+    .btn-login {
+        width: 100%;
+        padding: 15px;
+        font-size: 16px;
+        font-weight: 700;
+        font-family: 'Inter', sans-serif;
+        color: #fff;
+        background: linear-gradient(135deg, #48c6a9 0%, #3bb896 50%, #2daa83 100%);
+        border: none;
+        border-radius: 50px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(72, 198, 169, 0.35);
+        letter-spacing: 0.3px;
+        margin-top: 8px;
+    }
+
+    .btn-login:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 25px rgba(72, 198, 169, 0.45);
+        background: linear-gradient(135deg, #55d4b5 0%, #48c6a9 50%, #3bb896 100%);
+    }
+
+    .btn-login:active {
+        transform: translateY(0);
+        box-shadow: 0 2px 10px rgba(72, 198, 169, 0.3);
+    }
+
+    /* Links */
+    .login-links {
+        display: flex;
+        justify-content: center;
+        gap: 32px;
+        margin-top: 20px;
+    }
+
+    .login-links a {
+        font-size: 14px;
+        font-weight: 500;
+        color: #48c6a9;
+        text-decoration: none;
+        transition: color 0.2s ease;
+    }
+
+    .login-links a:hover {
+        color: #2daa83;
+        text-decoration: underline;
+    }
+
+    /* Validation errors */
+    .field-validation-error {
+        color: #e74c3c;
+        font-size: 13px;
+        margin-top: 6px;
+        display: block;
+    }
+
+    .validation-summary-errors {
+        background: #fdf0ed;
+        border: 1px solid #f5c6cb;
+        border-radius: 10px;
+        padding: 12px 16px;
+        margin-bottom: 20px;
+        color: #e74c3c;
+        font-size: 14px;
+    }
+
+    .validation-summary-errors ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    /* Footer bar */
+    .login-footer {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: #fff;
+        border-top: 1px solid #eee;
+        padding: 16px 0;
+        z-index: 2;
+    }
+
+    .footer-items {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 40px;
+        flex-wrap: wrap;
+    }
+
+    .footer-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 14px;
+        font-weight: 600;
+        color: #333;
+    }
+
+    .footer-dot {
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        display: inline-block;
+    }
+
+    .footer-dot.coral { background: linear-gradient(135deg, #ff6b6b, #ee5a24); }
+    .footer-dot.yellow { background: linear-gradient(135deg, #ffc107, #ff9800); }
+    .footer-dot.pink { background: linear-gradient(135deg, #e17bff, #c471ed); }
+    .footer-dot.blue { background: linear-gradient(135deg, #667eea, #764ba2); }
+    .footer-dot.peach { background: linear-gradient(135deg, #ff9a9e, #fecfef); }
+
+    /* Responsive */
+    @@media (max-width: 576px) {
+        .login-heading {
+            font-size: 28px;
+        }
+
+        .login-card {
+            padding: 28px 20px;
+        }
+
+        .footer-items {
+            gap: 20px;
+        }
+
+        .footer-item {
+            font-size: 12px;
+        }
+    }
+</style>
+
+<!-- Decorative blobs -->
+<div class="blob-top-right"></div>
+<div class="blob-bottom-left"></div>
+<div class="blob-accent"></div>
+
+<div class="login-page">
+    <!-- Logo -->
+    <div class="login-logo">
+        <div class="logo-icon">🎓</div>
+        <span class="logo-text">FormSubmit</span>
+    </div>
+
+    <!-- Heading -->
+    <h1 class="login-heading">Chào mừng trở lại</h1>
+
+    <!-- Login Card -->
+    <div class="login-card">
+        <div asp-validation-summary="All"></div>
+
+        <form asp-controller="Account" asp-action="Login" method="post" id="loginForm">
+            <div class="login-form-group">
+                <label asp-for="Username">Tên đăng nhập</label>
+                <div class="input-wrapper">
+                    <i class="fa-solid fa-user input-icon"></i>
+                    <input asp-for="Username" class="login-input" placeholder="e.g. nguyenvana" id="usernameInput" />
+                </div>
+                <span asp-validation-for="Username"></span>
+            </div>
+
+            <div class="login-form-group">
+                <label asp-for="Password">Mật khẩu</label>
+                <div class="input-wrapper">
+                    <i class="fa-solid fa-lock input-icon"></i>
+                    <input asp-for="Password" type="password" class="login-input" placeholder="e.g. matkhau123" id="passwordInput" />
+                </div>
+                <span asp-validation-for="Password"></span>
+            </div>
+
+            <button type="submit" class="btn-login" id="loginButton">Đăng Nhập</button>
+        </form>
+
+        <div class="login-links">
+            <a href="#" id="registerLink">Chưa có tài khoản?</a>
+            <a href="#" id="forgotPasswordLink">Quên mật khẩu?</a>
+        </div>
+    </div>
+</div>
+
+<!-- Footer -->
+<div class="login-footer">
+    <div class="footer-items">
+        <div class="footer-item">
+            <span class="footer-dot coral"></span>
+            HomeWork
+        </div>
+        <div class="footer-item">
+            <span class="footer-dot yellow"></span>
+            FormCheck
+        </div>
+        <div class="footer-item">
+            <span class="footer-dot pink"></span>
+            DataView
+        </div>
+        <div class="footer-item">
+            <span class="footer-dot blue"></span>
+            Analytics
+        </div>
+        <div class="footer-item">
+            <span class="footer-dot peach"></span>
+            Settings
+        </div>
+    </div>
+</div>
