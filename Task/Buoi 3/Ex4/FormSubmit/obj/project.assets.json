@@ -13,11 +13,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/Users/nguyenthanhan/Documents/Năm 2 Kỳ 2/FormSubmit/FormSubmit/FormSubmit.csproj",
+      "projectUniqueName": "/Users/nguyenthanhan/Cong-nghe-Phan-Mem/Task/Buoi 3/Ex4/FormSubmit/FormSubmit.csproj",
       "projectName": "FormSubmit",
-      "projectPath": "/Users/nguyenthanhan/Documents/Năm 2 Kỳ 2/FormSubmit/FormSubmit/FormSubmit.csproj",
+      "projectPath": "/Users/nguyenthanhan/Cong-nghe-Phan-Mem/Task/Buoi 3/Ex4/FormSubmit/FormSubmit.csproj",
       "packagesPath": "/Users/nguyenthanhan/.nuget/packages/",
-      "outputPath": "/Users/nguyenthanhan/Documents/Năm 2 Kỳ 2/FormSubmit/FormSubmit/obj/",
+      "outputPath": "/Users/nguyenthanhan/Cong-nghe-Phan-Mem/Task/Buoi 3/Ex4/FormSubmit/obj/",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "/Users/nguyenthanhan/.nuget/NuGet/NuGet.Config"
