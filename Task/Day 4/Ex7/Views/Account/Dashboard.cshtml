@@ -1,0 +1,21 @@
+@{
+    ViewData["Title"] = "Dashboard";
+}
+
+<div class="text-center mt-5">
+    <h1 class="display-4">Dashboard!</h1>
+    <hr />
+
+    @if (ViewBag.Username != null)
+    {
+        <div class="alert alert-success">
+            <h4>Xin chào, <strong>@ViewBag.Username</strong>! Bạn đã đăng nhập thành công.</h4>
+        </div>
+    }
+
+    <p class="lead mt-3">Đây là trang Dashboard sau khi đăng nhập.</p>
+
+    <a asp-controller="Account" asp-action="Login" class="btn btn-outline-secondary mt-3">
+        ← Quay lại trang Login
+    </a>
+</div>

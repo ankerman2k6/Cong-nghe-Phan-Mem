@@ -1,0 +1,61 @@
+@model Ex7.Models.LoginViewModel
+
+@{
+    ViewData["Title"] = "Đăng Nhập";
+}
+<style>
+    .mt-5 {
+        margin-top: 10rem !important;
+    }
+</style>
+
+<div class="row justify-content-center mt-5">
+    <div class="col-md-4">
+        <div class="card shadow">
+            <div class="card-body">
+                <h3 class="card-title text-center mb-4">Đăng Nhập</h3>
+
+                @* ===== HIỂN THỊ THÔNG BÁO LỖI (nếu có) ===== *@
+                @if (ViewBag.Error != null)
+                {
+                    <div class="alert alert-danger text-center">
+                        @ViewBag.Error
+                    </div>
+                }
+
+                @* ===== FORM ĐĂNG NHẬP ===== *@
+                @* asp-controller="Account" asp-action="Login" → form sẽ POST đến /Account/Login *@
+                <form asp-controller="Account" asp-action="Login" method="post">
+
+                    @* ----- Field: Username ----- *@
+                    <div class="mb-3">
+                        <label asp-for="Username" class="form-label"></label>
+                        <input asp-for="Username" class="form-control" placeholder="Nhập tên đăng nhập" />
+                        @* Hiển thị lỗi validation nếu để trống *@
+                        <span asp-validation-for="Username" class="text-danger"></span>
+                    </div>
+
+                    @* ----- Field: Password ----- *@
+                    <div class="mb-3">
+                        <label asp-for="Password" class="form-label"></label>
+                        <input asp-for="Password" class="form-control" placeholder="Nhập mật khẩu" />
+                        <span asp-validation-for="Password" class="text-danger"></span>
+                    </div>
+
+                    @* ----- Nút Submit ----- *@
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary">Đăng Nhập</button>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@* ===== THÊM VALIDATION SCRIPTS (phía client) ===== *@
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
