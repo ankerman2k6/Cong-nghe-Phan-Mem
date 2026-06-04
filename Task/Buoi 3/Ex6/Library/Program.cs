@@ -17,6 +17,7 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
+app.UseMiddleware<Library.Middlewares.RequestLoggingMiddleware>(); 
 
 app.UseAuthorization();
 

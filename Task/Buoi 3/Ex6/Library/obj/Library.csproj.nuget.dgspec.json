@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "/Users/nguyenthanhan/Documents/Năm 2 Kỳ 2/Library/Library/Library.csproj": {}
+    "/Users/nguyenthanhan/Cong-nghe-Phan-Mem/Task/Buoi 3/Ex6/Library/Library.csproj": {}
   },
   "projects": {
-    "/Users/nguyenthanhan/Documents/Năm 2 Kỳ 2/Library/Library/Library.csproj": {
+    "/Users/nguyenthanhan/Cong-nghe-Phan-Mem/Task/Buoi 3/Ex6/Library/Library.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/Users/nguyenthanhan/Documents/Năm 2 Kỳ 2/Library/Library/Library.csproj",
+        "projectUniqueName": "/Users/nguyenthanhan/Cong-nghe-Phan-Mem/Task/Buoi 3/Ex6/Library/Library.csproj",
         "projectName": "Library",
-        "projectPath": "/Users/nguyenthanhan/Documents/Năm 2 Kỳ 2/Library/Library/Library.csproj",
+        "projectPath": "/Users/nguyenthanhan/Cong-nghe-Phan-Mem/Task/Buoi 3/Ex6/Library/Library.csproj",
         "packagesPath": "/Users/nguyenthanhan/.nuget/packages/",
-        "outputPath": "/Users/nguyenthanhan/Documents/Năm 2 Kỳ 2/Library/Library/obj/",
+        "outputPath": "/Users/nguyenthanhan/Cong-nghe-Phan-Mem/Task/Buoi 3/Ex6/Library/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "/Users/nguyenthanhan/.nuget/NuGet/NuGet.Config"
