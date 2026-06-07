@@ -1,0 +1,47 @@
+@model Ex8.Models.Movie
+@{
+    ViewData["Title"] = "Sửa Mới";
+}
+<style>
+    .form-control{
+        border-radius: 10px;
+        padding: 10px;
+        border-color:transparent;
+    }
+    .form-text{
+        padding: 50px;
+    }
+</style>
+
+<div class="row" style="margin: 100px; justify-content: center; align-items: center; display: flex;">
+    <div class="col-md-6" style="background-color: #0f1931; padding: 20px; border-radius: 10px; color: white">
+        
+        <form asp-action="Edit" method="post" class="mt-10">
+            <input asp-for="Id" type="hidden" />
+
+            <div class="mb-3">
+                <label asp-for="Title" class="form-label"></label>
+                <input asp-for="Title" class="form-control" placeholder="Nhập tên phim....">
+                <span asp-validation-for="Title" class="text-danger"></span>
+            </div>
+            <div class="mb-3">
+                <label asp-for="PublishYear" class="form-label"></label>
+                <input asp-for="PublishYear" class="form-control" placeholder="Nhập năm phát hành....">
+                <span asp-validation-for="PublishYear" class="text-danger"></span>
+            </div>
+            <div class="mb-3">
+                <label asp-for="National" class="form-label"></label>
+                <input asp-for="National" class="form-control" placeholder="Nhập quốc gia....">
+                <span asp-validation-for="National" class="text-danger"></span>
+            </div>
+            <div class="mb-3">
+                <label asp-for="Description" class="form-label"></label>
+                <textarea asp-for="Description" class="form-control form-text" rows="4" maxlength="200" placeholder="Nhập mô tả phim....."></textarea>
+                <span asp-validation-for="Description" class="text-danger"></span>
+            </div>
+            <button type="submit" class="btn btn-primary">Cập nhật</button>
+            <a asp-action="Index" class="btn btn-secondary"> Quay Lại</a>
+        </form>
+    </div>
+
+</div>

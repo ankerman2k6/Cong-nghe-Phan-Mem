@@ -1,0 +1,87 @@
+@model IEnumerable<Ex8.Models.Movie>
+@{
+    ViewData["Title"] = "Danh Sách Phim";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1>🎬 @ViewBag.PageTitle</h1>
+    <a asp-action="Create" class="btn btn-primary">Thêm Phim Mới</a>
+</div>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show">
+        @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+<p class="text-muted">Tổng số phim: <strong>@ViewBag.TotalMovies</strong></p>
+
+<table class="table table-striped table-hover">
+    <thead class="table-dark">
+        <tr>
+            <th>ID</th>
+            <th>Tiêu đề</th>
+            <th>Năm phát hành</th>
+            <th>Quốc gia</th>
+            <th>Thao tác</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var movie in Model)
+        {
+            <tr>
+                <td>@movie.Id</td>
+                <td>@movie.Title</td>
+                <td>@movie.PublishYear</td>
+                <td>@movie.National</td>
+                <td>
+                    <a asp-action="Details" asp-controller="Movie" asp-route-id="@movie.Id" class="btn btn-info btn-sm">Chi tiết</a>
+                    <a asp-action="Edit" asp-route-id="@movie.Id" class="btn btn-warning btn-sm">Sửa</a>
+                    <a onclick="confirmDelete(@movie.Id, '@movie.Title')" class="btn btn-danger btn-sm">Xóa</a>
+                    @* Chạy hàm trong onclick *@
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@* Modal xác nhận xoá  *@
+<!-- Modal xác nhận xoá -->
+<div class="modal fade" id="deleteModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Xác nhận xóa</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                Bạn có chắc muốn xóa phim <strong id="movieTitleToDelete"></strong>?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                <form id="deleteForm" method="post">
+                    @Html.AntiForgeryToken()
+                    <button type="submit" class="btn btn-danger">Xóa</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@* JavaScript để xử lý xác nhận xóa *@
+<script>
+    function confirmDelete(id, title){
+        //Hiển thi tên phim trong modal
+        document.getElementById('movieTitleToDelete').textContent = title;
+
+        //Trỏ form đến action Delete với id tương ứng
+        document.getElementById('deleteForm').action = '/Movie/Delete/' + id;
+
+        //Hiển thị modal
+        var modal = new bootstrap.Modal(document.getElementById('deleteModal'));
+        modal.show();
+    }
+</script>
+

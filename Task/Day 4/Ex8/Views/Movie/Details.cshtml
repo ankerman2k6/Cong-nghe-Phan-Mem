@@ -1,0 +1,31 @@
+@model Ex8.Models.Movie
+@{
+    ViewData["Title"] = "Chi tiết Phim";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1>🎬 @ViewBag.PageTitle @ViewBag.NameMovie</h1>
+</div>
+
+<table class="table table-hover">
+    <thead style="background-color: #ebebeb; font-weight: bold;">
+        <tr>
+            <th>ID</th>
+            <th>Tiêu đề</th>
+            <th>Năm phát hành</th>
+            <th>Quốc gia</th>
+            <th>Mô tả</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>@Model.Id</td>
+            <td>@Model.Title</td>
+            <td>@Model.PublishYear</td>
+            <td>@Model.National</td>
+            <td>@Model.Description</td>
+        </tr>
+    </tbody>
+</table>
+
+<a class="btn btn-secondary" asp-action="Index">Quay trở lại trang chủ</a>
