@@ -17,7 +17,7 @@
 
 <!-- Form thêm sách -->
 @*Sẽ post đến trang Book/Create *@
-<form asp-controller="Book" asp-action="Create" method="post"> 
+<form asp-controller="Book" asp-action="Create" method="post" enctype="multipart/form-data"> 
     <div class="mb-3">
         <label asp-for="Name" class="form-label">Tên sách</label>
         <input asp-for="Name" class="form-control" placeholder="Nhập tên sách" />
@@ -29,6 +29,13 @@
         <input asp-for="Price" class="form-control" placeholder="Nhập giá sách" />
         <span asp-validation-for="Price" class="text-danger"></span> 
         @* Thêm validation tại vị trí này *@
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Hình ảnh sản phẩm</label>
+        <input type="file" name="imageFile" class="form-control" accept=".jpg, .png" />
+        
+        @Html.ValidationMessage("ImageError", new { @class = "text-danger" })
     </div>
 
     <button type="submit" class="btn btn-success">Thêm sách</button>

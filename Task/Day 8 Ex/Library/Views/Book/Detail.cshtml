@@ -21,6 +21,19 @@
                 <th>Giá</th>
                 <td>@Model.Price VNĐ</td>
             </tr>
+            <tr>
+                <th>Ảnh</th>
+               <td>
+                    @if (!string.IsNullOrEmpty(Model.imgLink))
+                    {
+                        <img src="@Model.imgLink" alt="Ảnh của @Model.Name" style="max-width: 200px; height: auto; border-radius: 5px;" />
+                    }
+                    else
+                    {
+                        <span class="text-muted">Chưa có ảnh</span>
+                    }
+                </td>
+            </tr>
         </table>
 
         <a asp-controller="Book" asp-action="Index" class="btn btn-secondary">
