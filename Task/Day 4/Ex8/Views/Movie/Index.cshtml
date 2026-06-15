@@ -5,7 +5,7 @@
 
 <div class="d-flex justify-content-between align-items-center mb-3">
     <h1>🎬 @ViewBag.PageTitle</h1>
-    <a asp-action="Create" class="btn btn-primary">Thêm Phim Mới</a>
+    <a asp-action="Create" asp-controller="Movie" class="btn btn-primary">Thêm Phim Mới</a>
 </div>
 
 @if (TempData["SuccessMessage"] != null)
@@ -38,7 +38,7 @@
                 <td>@movie.National</td>
                 <td>
                     <a asp-action="Details" asp-controller="Movie" asp-route-id="@movie.Id" class="btn btn-info btn-sm">Chi tiết</a>
-                    <a asp-action="Edit" asp-route-id="@movie.Id" class="btn btn-warning btn-sm">Sửa</a>
+                    <a asp-action="Edit" asp-route-id="@movie.Id" asp-controller="Movie" class="btn btn-warning btn-sm">Sửa</a>
                     <a onclick="confirmDelete(@movie.Id, '@movie.Title')" class="btn btn-danger btn-sm">Xóa</a>
                     @* Chạy hàm trong onclick *@
                 </td>

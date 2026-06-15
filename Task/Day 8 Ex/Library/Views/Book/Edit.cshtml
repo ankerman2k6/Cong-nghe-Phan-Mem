@@ -1,0 +1,26 @@
+@model Book
+
+@{
+    ViewData["Title"] = "Sửa sách";
+}
+
+<h2 class="mb-4">Sửa thông tin sách</h2>
+
+<form asp-controller="Book" asp-action="Edit" method="post">
+    <input type="hidden" asp-for="Id" />
+
+    <div class="mb-3">
+        <label asp-for="Name" class="form-label">Tên sách</label>
+        <input asp-for="Name" class="form-control" />
+        <span asp-validation-for="Name" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Price" class="form-label">Giá</label>
+        <input asp-for="Price" class="form-control" />
+        <span asp-validation-for="Price" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
+    <a asp-controller="Book" asp-action="Index" class="btn btn-secondary">Hủy</a>
+</form>

@@ -6,13 +6,8 @@ namespace Ex8.Controllers
 {
     public class MovieController : Controller
     {
-        private static List<Movie> movies = new List<Movie>
-        {
-            new Movie { Id = 1, Title = "Inception", PublishYear = 2010, Description = "A thief who steals corporate secrets through the use of dream-sharing technology is given the inverse task of planting an idea into the mind of a C.E.O.", National = "USA" },
-            new Movie { Id = 2, Title = "Parasite", PublishYear = 2019, Description = "Greed and class discrimination threaten the newly formed symbiotic relationship between the wealthy Park family and the destitute Kim clan.", National = "South Korea" },
-            new Movie { Id = 3, Title = "The Godfather", PublishYear = 1972, Description = "The aging patriarch of an organized crime dynasty transfers control of his clandestine empire to his reluctant son.", National = "USA" }
-        };
-
+        private static List<Movie> movies;
+        
         public IActionResult Index()
         {
             ViewBag.TotalMovies = movies.Count;
