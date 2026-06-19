@@ -1,0 +1,118 @@
+@model IEnumerable<Event_BIT240004>
+
+@{
+    ViewData["Title"] = "Danh sách sự kiện";
+}
+
+<h1>Danh sách sự kiện</h1>
+
+<p>
+    <a asp-action="Create" class="btn btn-primary">Tạo mới</a>
+</p>
+
+<form asp-action="Index" method="get" class="mb-4">
+    <div class="row g-3 align-items-end">
+        <div class="col-md-3">
+            <label class="form-label">Tên hoặc địa điểm</label>
+            <input type="text" name="searchNameOrLocation" value="@ViewData["searchNameOrLocation"]" class="form-control" />
+        </div>
+        <div class="col-md-3">
+            <label class="form-label">Loại sự kiện</label>
+            <select name="categoryId" class="form-select" asp-items="ViewBag.EventCategoryId">
+                <option value="">-- Tất cả --</option>
+            </select>
+        </div>
+        <div class="col-md-2">
+            <label class="form-label">Từ ngày</label>
+            <input type="date" name="fromDate" value="@ViewData["fromDate"]" class="form-control" />
+        </div>
+        <div class="col-md-2">
+            <label class="form-label">Đến ngày</label>
+            <input type="date" name="toDate" value="@ViewData["toDate"]" class="form-control" />
+        </div>
+        <div class="col-md-2">
+            <label class="form-label">Sắp xếp</label>
+            <select name="sortOrder" class="form-select">
+                <option value="">-- Mặc định --</option>
+                @if (ViewData["sortOrder"]?.ToString() == "closest_date")
+                {
+                    <option value="closest_date" selected>Ngày bắt đầu gần nhất</option>
+                }
+                else
+                {
+                    <option value="closest_date">Ngày bắt đầu gần nhất</option>
+                }
+                @if (ViewData["sortOrder"]?.ToString() == "price_asc")
+                {
+                    <option value="price_asc" selected>Giá tăng dần</option>
+                }
+                else
+                {
+                    <option value="price_asc">Giá tăng dần</option>
+                }
+                @if (ViewData["sortOrder"]?.ToString() == "price_desc")
+                {
+                    <option value="price_desc" selected>Giá giảm dần</option>
+                }
+                else
+                {
+                    <option value="price_desc">Giá giảm dần</option>
+                }
+            </select>
+        </div>
+        <div class="col-12 mt-3">
+            <button type="submit" class="btn btn-success">Tìm kiếm</button>
+            <a asp-action="Index" class="btn btn-secondary">Xóa bộ lọc</a>
+        </div>
+    </div>
+</form>
+
+@if (ViewBag.Message != null)
+{
+    <div class="alert alert-warning">
+        @ViewBag.Message
+    </div>
+}
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Tên</th>
+            <th>Loại</th>
+            <th>Bắt đầu</th>
+            <th>Kết thúc</th>
+            <th>Giá</th>
+            <th>Địa điểm</th>
+            <th>Trạng thái</th>
+            <th>Hành động</th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        var status = "";
+        var now = DateTime.Now;
+        if (item.StartDate > now) {
+            status = "Sắp diễn ra";
+        } else if (item.EndDate < now) {
+            status = "Đã kết thúc";
+        } else {
+            status = "Đang diễn ra";
+        }
+
+        <tr>
+            <td>@item.Name</td>
+            <td>@item.EventCategory?.Name</td>
+            <td>@item.StartDate.ToString("dd/MM/yyyy HH:mm")</td>
+            <td>@item.EndDate.ToString("dd/MM/yyyy HH:mm")</td>
+            <td>@item.Price.ToString("N0")</td>
+            <td>@item.Location</td>
+            <td>@status</td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.Id">Sửa</a> |
+                <a asp-action="Details" asp-route-id="@item.Id">Chi tiết</a> |
+                <a asp-action="Delete" asp-route-id="@item.Id">Xóa</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

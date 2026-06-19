@@ -1,0 +1,32 @@
+@model IEnumerable<EventCategory_BIT240004>
+
+@{
+    ViewData["Title"] = "Loại sự kiện";
+}
+
+<h1>Quản lý loại sự kiện</h1>
+
+<p>
+    <a asp-action="Create" class="btn btn-primary">Tạo mới</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Tên loại</th>
+            <th>Mô tả</th>
+            <th>Hành động</th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>@item.Name</td>
+            <td>@item.Description</td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.Id">Sửa</a> |
+                <a asp-action="Delete" asp-route-id="@item.Id">Xóa</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

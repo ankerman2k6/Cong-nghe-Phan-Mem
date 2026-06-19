@@ -1,0 +1,29 @@
+@model EventCategory_BIT240004
+
+@{
+    ViewData["Title"] = "Tạo loại sự kiện";
+}
+
+<h1>Tạo loại sự kiện</h1>
+<hr />
+<div class="row">
+    <div class="col-md-6">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="mb-3">
+                <label asp-for="Name" class="control-label">Tên loại</label>
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+            <div class="mb-3">
+                <label asp-for="Description" class="control-label">Mô tả</label>
+                <textarea asp-for="Description" class="form-control"></textarea>
+                <span asp-validation-for="Description" class="text-danger"></span>
+            </div>
+            <div class="mb-3">
+                <input type="submit" value="Tạo mới" class="btn btn-primary" />
+                <a asp-action="Index" class="btn btn-secondary">Quay lại</a>
+            </div>
+        </form>
+    </div>
+</div>

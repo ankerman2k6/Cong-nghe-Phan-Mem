@@ -1,0 +1,39 @@
+@model EventImage_BIT240004
+
+@{
+    ViewData["Title"] = "Thêm ảnh sự kiện";
+}
+
+<h1>Thêm ảnh sự kiện</h1>
+
+<hr />
+<div class="row">
+    <div class="col-md-6">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            
+            <input type="hidden" asp-for="EventId" value="@ViewBag.EventId" />
+            
+            <div class="mb-3">
+                <label asp-for="ImageUrl" class="control-label">Đường dẫn ảnh (URL)</label>
+                <input asp-for="ImageUrl" class="form-control" />
+                <span asp-validation-for="ImageUrl" class="text-danger"></span>
+            </div>
+            
+            <div class="mb-3 form-check">
+                <label class="form-check-label">
+                    <input class="form-check-input" asp-for="IsThumbnail" /> Đặt làm ảnh đại diện
+                </label>
+            </div>
+            
+            <div class="mb-3">
+                <input type="submit" value="Thêm ảnh" class="btn btn-primary" />
+                <a asp-controller="Events" asp-action="Details" asp-route-id="@ViewBag.EventId" class="btn btn-secondary">Quay lại chi tiết sự kiện</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
