@@ -1,0 +1,286 @@
+@model Cinema_Management.Models.MovieViewModel
+
+@{
+    ViewData["Title"] = Model.Title + " - Movie Details";
+    var firstFutureShowtime = Model.Showtimes?
+        .Where(s => s.Date.Date >= DateTime.Today)
+        .OrderBy(s => s.Date)
+        .ThenBy(s => s.StartTime)
+        .FirstOrDefault();
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/details.css" asp-append-version="true" />
+}
+
+<main class="details-page">
+    <nav class="details-breadcrumb" aria-label="Breadcrumb">
+        <a asp-controller="Home" asp-action="Index">Trang chủ</a>
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M9.47 5.47a.75.75 0 0 1 1.06 0l6 6a.75.75 0 0 1 0 1.06l-6 6a.75.75 0 1 1-1.06-1.06L14.94 12 9.47 6.53a.75.75 0 0 1 0-1.06Z" />
+        </svg>
+        <span class="breadcrumb-current">@Model.Title</span>
+    </nav>
+
+    <section class="details-hero" style="--poster-image: url('@Model.PosterURL');">
+        <div class="details-hero__content">
+            <div class="details-poster" aria-label="Poster phim @Model.Title">
+                <div class="details-poster__frame">
+                    <img src="@Model.PosterURL" alt="Poster phim @Model.Title" />
+                </div>
+            </div>
+
+            <div class="details-info">
+                <p class="details-kicker">COSMOS PRESENTS</p>
+
+                <div class="details-tags" aria-label="Thông tin nhanh">
+                    @if (!string.IsNullOrEmpty(Model.Genre))
+                    {
+                        <span class="details-tag">@Model.Genre</span>
+                    }
+                    <span class="details-tag details-tag--duration">@Model.Duration phút</span>
+                    @if (!string.IsNullOrEmpty(Model.AgeRating))
+                    {
+                        <span class="details-tag details-tag--age">@Model.AgeRating</span>
+                    }
+                </div>
+
+                <h1 class="details-title">@Model.Title</h1>
+
+                @if (!string.IsNullOrEmpty(Model.Synopsis))
+                {
+                    <p class="details-synopsis">@Model.Synopsis</p>
+                }
+
+                <div class="details-actions">
+                    <a href="#" class="details-btn--book" id="btn-book-tickets">
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <path d="M5.75 5A2.75 2.75 0 0 0 3 7.75v2.5a.75.75 0 0 0 .75.75 1 1 0 0 1 0 2 .75.75 0 0 0-.75.75v2.5A2.75 2.75 0 0 0 5.75 20h12.5A2.75 2.75 0 0 0 21 17.25v-2.5a.75.75 0 0 0-.75-.75 1 1 0 0 1 0-2 .75.75 0 0 0 .75-.75v-2.5A2.75 2.75 0 0 0 18.25 5H5.75Zm0 1.5h12.5c.69 0 1.25.56 1.25 1.25v1.85a2.5 2.5 0 0 0 0 4.8v1.85c0 .69-.56 1.25-1.25 1.25H5.75c-.69 0-1.25-.56-1.25-1.25V14.4a2.5 2.5 0 0 0 0-4.8V7.75c0-.69.56-1.25 1.25-1.25Zm8 2.25a.75.75 0 0 1 .75.75v5a.75.75 0 0 1-1.5 0v-5a.75.75 0 0 1 .75-.75Z" />
+                        </svg>
+                        <span>Đặt vé</span>
+                    </a>
+                    <button type="button"
+                            class="details-btn--trailer"
+                            id="btn-watch-trailer"
+                            onclick="openTrailer('@Model.Trailer')">
+                        <span class="play-icon" aria-hidden="true">
+                            <svg viewBox="0 0 24 24">
+                                <path d="M8.75 5.74c0-.93 1.02-1.5 1.82-1.02l9.03 5.43a1.2 1.2 0 0 1 0 2.06l-9.03 5.43a1.2 1.2 0 0 1-1.82-1.02V5.74Z" />
+                            </svg>
+                        </span>
+                        <span>Xem trailer</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="details-extra" aria-labelledby="movie-facts-title">
+        <div class="details-section-heading">
+            <p>Hồ sơ phim</p>
+            <h2 id="movie-facts-title">Thông tin chi tiết</h2>
+        </div>
+
+        <div class="details-extra__grid">
+            @if (!string.IsNullOrEmpty(Model.MovieDirector))
+            {
+                <div class="details-extra__item">
+                    <span class="details-extra__label">Đạo diễn</span>
+                    <span class="details-extra__value">@Model.MovieDirector</span>
+                </div>
+            }
+
+            @if (!string.IsNullOrEmpty(Model.MovieCast))
+            {
+                <div class="details-extra__item">
+                    <span class="details-extra__label">Diễn viên</span>
+                    <span class="details-extra__value">@Model.MovieCast</span>
+                </div>
+            }
+
+            @if (Model.Language != null)
+            {
+                <div class="details-extra__item">
+                    <span class="details-extra__label">Ngôn ngữ</span>
+                    <span class="details-extra__value">@Model.Language.LanguageName</span>
+                </div>
+            }
+
+            @if (Model.Country != null)
+            {
+                <div class="details-extra__item">
+                    <span class="details-extra__label">Quốc gia</span>
+                    <span class="details-extra__value">@Model.Country.CountryName</span>
+                </div>
+            }
+
+            <div class="details-extra__item">
+                <span class="details-extra__label">Ngày khởi chiếu</span>
+                <span class="details-extra__value">@Model.ReleaseDate.ToString("dd/MM/yyyy")</span>
+            </div>
+
+            <div class="details-extra__item">
+                <span class="details-extra__label">Thời lượng</span>
+                <span class="details-extra__value">@Model.Duration phút</span>
+            </div>
+        </div>
+    </section>
+
+    @{
+        var today = DateTime.Today;
+        var endDate = today.AddDays(6);
+        var displayDates = Enumerable.Range(0, 7)
+            .Select(offset => today.AddDays(offset))
+            .ToList();
+
+        var showtimesByDate = (Model.Showtimes ?? Enumerable.Empty<Cinema_Management.Models.Showtimes>())
+            .Where(s => s.Date.Date >= today && s.Date.Date <= endDate)
+            .OrderBy(s => s.Date)
+            .GroupBy(s => s.Date.Date)
+            .ToDictionary(
+                group => group.Key,
+                group => group.OrderBy(s => s.StartTime).ToList());
+
+        var vietnameseDays = new Dictionary<DayOfWeek, string>
+        {
+            { DayOfWeek.Monday, "T2" },
+            { DayOfWeek.Tuesday, "T3" },
+            { DayOfWeek.Wednesday, "T4" },
+            { DayOfWeek.Thursday, "T5" },
+            { DayOfWeek.Friday, "T6" },
+            { DayOfWeek.Saturday, "T7" },
+            { DayOfWeek.Sunday, "CN" }
+        };
+    }
+
+    <section class="showtimes-section" aria-labelledby="showtimes-title">
+        <div class="showtimes-header">
+            <p>Lịch trong 7 ngày tới</p>
+            <h2 class="showtimes-header__title" id="showtimes-title">Lịch chiếu</h2>
+        </div>
+
+        <div class="showtimes-dates" role="tablist" aria-label="Chọn ngày chiếu">
+            @for (int i = 0; i < displayDates.Count; i++)
+            {
+                var date = displayDates[i];
+                var dayLabel = vietnameseDays[date.DayOfWeek];
+                var isActive = i == 0 ? "active" : "";
+
+                <button class="showtimes-date-tab @isActive"
+                        type="button"
+                        data-date="@date.ToString("yyyy-MM-dd")"
+                        onclick="switchDateTab(this)">
+                    <span class="showtimes-date-tab__day">@date.Day</span>
+                    <span class="showtimes-date-tab__month">/@date.ToString("MM") - @dayLabel</span>
+                </button>
+            }
+        </div>
+
+        @for (int i = 0; i < displayDates.Count; i++)
+        {
+            var date = displayDates[i];
+            var displayStyle = i == 0 ? "flex" : "none";
+            var hasShowtimes = showtimesByDate.TryGetValue(date, out var dateShowtimes) && dateShowtimes.Any();
+
+            <div class="showtimes-times" data-date="@date.ToString("yyyy-MM-dd")" style="display: @displayStyle;">
+                @if (hasShowtimes)
+                {
+                    <div class="showtimes-times__grid">
+                        @foreach (var showtime in dateShowtimes)
+                        {
+                            <a href="#" class="showtimes-time-card">
+                                <span class="showtimes-time-card__time">@showtime.StartTime.ToString("HH:mm")</span>
+                            </a>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <div class="showtimes-empty showtimes-empty--panel">
+                        <p>Chưa có suất chiếu trong ngày này.</p>
+                    </div>
+                }
+            </div>
+        }
+    </section>
+
+    <div class="trailer-modal" id="trailerModal" aria-hidden="true">
+        <div class="trailer-modal__content">
+            <button class="trailer-modal__close" onclick="closeTrailer()" aria-label="Đóng trailer">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M6.22 4.97a.75.75 0 0 1 1.06 0L12 9.69l4.72-4.72a.75.75 0 1 1 1.06 1.06L13.06 10.75l4.72 4.72a.75.75 0 1 1-1.06 1.06L12 11.81l-4.72 4.72a.75.75 0 0 1-1.06-1.06l4.72-4.72-4.72-4.72a.75.75 0 0 1 0-1.06Z" />
+                </svg>
+            </button>
+            <iframe id="trailerIframe"
+                    src=""
+                    allowfullscreen
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture">
+            </iframe>
+        </div>
+    </div>
+</main>
+
+@section Scripts {
+    <script>
+        // Convert YouTube URL to embed URL
+        function getEmbedUrl(url) {
+            if (!url) return '';
+            // Handle youtu.be short links
+            let match = url.match(/youtu\.be\/([a-zA-Z0-9_-]+)/);
+            if (match) return 'https://www.youtube.com/embed/' + match[1] + '?autoplay=1';
+            // Handle youtube.com/watch?v= links
+            match = url.match(/[?&]v=([a-zA-Z0-9_-]+)/);
+            if (match) return 'https://www.youtube.com/embed/' + match[1] + '?autoplay=1';
+            return url;
+        }
+
+        function openTrailer(trailerUrl) {
+            if (!trailerUrl) {
+                alert('Trailer chưa có sẵn.');
+                return;
+            }
+            const modal = document.getElementById('trailerModal');
+            const iframe = document.getElementById('trailerIframe');
+            iframe.src = getEmbedUrl(trailerUrl);
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeTrailer() {
+            const modal = document.getElementById('trailerModal');
+            const iframe = document.getElementById('trailerIframe');
+            iframe.src = '';
+            modal.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        // Close modal on ESC key
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape') closeTrailer();
+        });
+
+        // Close modal on backdrop click
+        document.getElementById('trailerModal').addEventListener('click', function (e) {
+            if (e.target === this) closeTrailer();
+        });
+
+        // Showtimes date tab switching
+        function switchDateTab(clickedTab) {
+            // Remove active from all tabs
+            document.querySelectorAll('.showtimes-date-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            // Activate clicked tab
+            clickedTab.classList.add('active');
+
+            // Hide all time panels
+            const selectedDate = clickedTab.getAttribute('data-date');
+            document.querySelectorAll('.showtimes-times').forEach(panel => {
+                panel.style.display = 'none';
+            });
+            // Show matching panel
+            const target = document.querySelector('.showtimes-times[data-date="' + selectedDate + '"]');
+            if (target) target.style.display = 'flex';
+        }
+    </script>
+}

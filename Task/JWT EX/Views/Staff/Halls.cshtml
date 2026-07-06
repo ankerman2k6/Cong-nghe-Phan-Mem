@@ -1,0 +1,117 @@
+@model Cinema_Management.Models.StaffHallsViewModel
+@{
+    ViewData["Title"] = "Cinema Halls";
+    var firstRoom = Model.Rooms.FirstOrDefault();
+}
+
+<header class="staff-header">
+    <div style="display:flex;align-items:center;gap:16px;">
+        <h2>SCREENING ROOMS</h2>
+        <span class="badge badge-outline">
+            <i class="status-dot"></i>
+            DB LIVE
+        </span>
+    </div>
+    <div style="display:flex;gap:12px;">
+        <a class="btn-secondary" asp-controller="Staff" asp-action="Index" style="border:none;text-decoration:none;">
+            SCHEDULE
+        </a>
+    </div>
+</header>
+
+@if (!Model.Rooms.Any())
+{
+    <div class="halls-layout">
+        <div class="editor-panel">
+            <p class="tool-label">No screening rooms found in the database.</p>
+        </div>
+    </div>
+}
+else
+{
+    <div class="halls-shell">
+        <aside class="screening-room-sidebar">
+            <div class="room-sidebar-header">
+                <span>ROOMS</span>
+                <strong>@Model.Rooms.Count</strong>
+            </div>
+            <div class="room-sidebar-list">
+                @for (var i = 0; i < Model.Rooms.Count; i++)
+                {
+                    var room = Model.Rooms[i];
+                    <button type="button"
+                            class="room-sidebar-item @(i == 0 ? "active" : "")"
+                            data-screening-room-button
+                            data-room-id="@room.RoomID"
+                            data-room-name="@room.RoomName">
+                        <span class="room-sidebar-name">@room.RoomName</span>
+                        <span class="room-sidebar-meta">
+                            @room.SeatCount seats
+                            <span>@room.ReservationCount reservations</span>
+                        </span>
+                    </button>
+                }
+            </div>
+        </aside>
+
+        <main class="hall-workspace">
+            <div class="hall-management-grid">
+                <section class="screening-seat-panel screening-seat-panel-management" aria-label="Screening room seats">
+                    <div class="screening-seat-header">
+                        <div>
+                            <p class="tool-label">CINEMA MANAGEMENT</p>
+                            <h3 id="screeningRoomTitle">@(firstRoom?.RoomName ?? "Screening room")</h3>
+                        </div>
+                        <div class="screening-seat-controls">
+                            <label>
+                                Showtime
+                                <select id="screeningShowtimeSelect" disabled>
+                                    <option value="">No showtimes</option>
+                                </select>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="screening-seat-stats" id="screeningSeatStats">
+                        <span>Total <strong data-seat-count="total">0</strong></span>
+                        <span>Regular <strong data-seat-count="regular">0</strong></span>
+                        <span>VIP <strong data-seat-count="vip">0</strong></span>
+                        <span>Couple <strong data-seat-count="couple">0</strong></span>
+                        <span>Reserved <strong data-seat-count="reserved">0</strong></span>
+                        <span>Pending <strong data-seat-count="pending">0</strong></span>
+                        <span>Available <strong data-seat-count="available">0</strong></span>
+                    </div>
+                    <div class="screening-seat-message" id="screeningSeatMessage">Select a room to load seats.</div>
+
+                    <div class="screening-seat-map seat-card" id="screeningSeatMap" hidden>
+                        <div class="screen-wrap">
+                            <div class="screen"></div>
+                            <div class="screen-label">MÀN HÌNH CHIẾU</div>
+                        </div>
+                        <div class="seat-matrix screening-seat-grid" id="screeningSeatGrid"></div>
+                        <div class="legend" aria-label="Seat status legend">
+                            <span><i></i>Available</span>
+                            <span><i class="selected-key"></i>Reserved</span>
+                            <span><i class="pending-key"></i>Pending</span>
+                            <span><i class="sweet-key"></i>Couple</span>
+                        </div>
+                    </div>
+                </section>
+
+                <aside class="reservations-panel">
+                    <div class="reservations-header">
+                        <span>RESERVATIONS</span>
+                        <strong id="screeningReservationTicketCount">0 tickets</strong>
+                    </div>
+                    <div id="screeningReservationList">
+                        <div class="reservation-empty">No reservations for this showtime.</div>
+                    </div>
+                </aside>
+            </div>
+        </main>
+    </div>
+}
+
+@section Scripts {
+    <script src="~/js/staff.js" asp-append-version="true"></script>
+}
