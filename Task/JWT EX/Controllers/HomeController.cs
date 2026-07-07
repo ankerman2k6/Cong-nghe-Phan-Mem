@@ -104,6 +104,7 @@ public class HomeController : Controller
         return View(movie);
     }
 
+
     [HttpGet]
     public IActionResult Booking(int? movieId, int? showtimeId)
     {
@@ -124,6 +125,8 @@ public class HomeController : Controller
         return View(booking);
     }
 
+
+    
     [HttpPost]
     [ValidateAntiForgeryToken]
     public IActionResult SaveSchedule([FromBody] ScheduleRequest request)

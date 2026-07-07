@@ -2,10 +2,13 @@ using Cinema_Management.Data;
 using Cinema_Management.Models;
 using Cinema_Management.Services;
 using System.Security.Claims;
+using System.Text;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,6 +29,23 @@ builder.Services.AddHttpClient();
 builder.Services.Configure<EmailSettings>(
     builder.Configuration.GetSection("EmailSettings"));
 builder.Services.AddScoped<IEmailService, SmtpEmailService>();
+builder.Services.AddSingleton<IJwtTokenService, JwtTokenService>();
+
+var jwtSecret = builder.Configuration["JWT_SECRET"];
+if (string.IsNullOrWhiteSpace(jwtSecret))
+{
+    throw new InvalidOperationException(
+        "JWT_SECRET is missing. Set it with User Secrets in Development or an Environment Variable in Production.");
+}
+
+if (Encoding.UTF8.GetByteCount(jwtSecret) < 32)
+{
+    throw new InvalidOperationException(
+        "JWT_SECRET must be at least 32 bytes long for HMAC SHA-256 signing.");
+}
+
+var jwtIssuer = builder.Configuration["Jwt:Issuer"] ?? "CinemaManagement";
+var jwtAudience = builder.Configuration["Jwt:Audience"] ?? "CinemaManagementClient";
 
 var googleClientId =
     builder.Configuration["Authentication:Google:ClientId"];
@@ -52,7 +72,89 @@ var authenticationBuilder = builder.Services
     {
         options.LoginPath = "/Account/Login";
         options.AccessDeniedPath = "/Account/AccessDenied";
+    })
+    .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options =>
+    {
+        options.RequireHttpsMetadata = !builder.Environment.IsDevelopment();
+        options.SaveToken = false;
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidIssuer = jwtIssuer,
+            ValidateAudience = true,
+            ValidAudience = jwtAudience,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(
+                Encoding.UTF8.GetBytes(jwtSecret)),
+            ClockSkew = TimeSpan.FromMinutes(2)
+        };
+        options.Events = new JwtBearerEvents
+        {
+            OnMessageReceived = context =>
+            {
+                if (string.IsNullOrWhiteSpace(context.Token)
+                    && context.Request.Cookies.TryGetValue("jwt_token", out var token))
+                {
+                    context.Token = token;
+                }
+
+                return Task.CompletedTask;
+            },
+            OnChallenge = context =>
+            {
+                var acceptsHtml = context.Request.Headers.Accept.Any(
+                    value => value != null
+                             && value.Contains(
+                                 "text/html",
+                                 StringComparison.OrdinalIgnoreCase));
+
+                if (acceptsHtml)
+                {
+                    context.HandleResponse();
+                    context.Response.Redirect("/Account/Login");
+                }
+
+                return Task.CompletedTask;
+            },
+            OnForbidden = context =>
+            {
+                var acceptsHtml = context.Request.Headers.Accept.Any(
+                    value => value != null
+                             && value.Contains(
+                                 "text/html",
+                                 StringComparison.OrdinalIgnoreCase));
+
+                if (acceptsHtml)
+                {
+                    context.Response.Redirect("/Account/AccessDenied");
+                }
+                else
+                {
+                    context.Response.StatusCode = StatusCodes.Status403Forbidden;
+                }
+
+                return Task.CompletedTask;
+            }
+        };
     });
+
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("AdminOnly", policy =>
+    {
+        policy.AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme);
+        policy.RequireAuthenticatedUser();
+        policy.RequireRole("Admin");
+    });
+
+    options.AddPolicy("StaffOrAdmin", policy =>
+    {
+        policy.AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme);
+        policy.RequireAuthenticatedUser();
+        policy.RequireRole("Staff", "Admin");
+    });
+});
 
 // Production phai cau hinh ClientId va ClientSecret that
 // truoc khi bat lai dang nhap Google.
@@ -198,9 +300,34 @@ if (app.Environment.IsDevelopment() &&
 
             var principal =
                 new ClaimsPrincipal(identity);
+            var jwtTokenService =
+                context.RequestServices.GetRequiredService<IJwtTokenService>();
+            var developmentUser = new User
+            {
+                UserID = userId,
+                Email = email ?? "staff@gmail.com",
+                FullName = fullName ?? "Development User",
+                Role = role ?? "Staff",
+                Status = true
+            };
+            var jwtToken = jwtTokenService.CreateToken(
+                developmentUser,
+                rememberMe: true);
 
             // Gan nguoi dung gia lap vao request hien tai.
             context.User = principal;
+            context.Request.Headers["Authorization"] =
+                $"Bearer {jwtToken}";
+            context.Response.Cookies.Append(
+                "jwt_token",
+                jwtToken,
+                new CookieOptions
+                {
+                    HttpOnly = true,
+                    Secure = context.Request.IsHttps,
+                    SameSite = SameSiteMode.Lax,
+                    Expires = DateTimeOffset.UtcNow.AddDays(30)
+                });
 
             // Luu cookie de cac request tiep theo van duoc xem
             // la da dang nhap trong moi truong Development.

@@ -11,6 +11,7 @@ using System.Text.Json.Serialization;
 namespace Cinema_Management.Controllers;
 
 
+[Authorize(Policy = "StaffOrAdmin")]
 public class StaffController : Controller
 {
     private readonly ApplicationDbContext _context;
@@ -411,7 +412,6 @@ public class StaffController : Controller
         return View(viewModel);
     }
 
-    [Authorize(Roles = "Staff,Admin")]
     public async Task<IActionResult> Concessions()
     {
         ViewBag.ActiveTab = "concessions";
@@ -420,7 +420,6 @@ public class StaffController : Controller
     }
 
     [HttpGet]
-    [Authorize(Roles = "Staff,Admin")]
     public async Task<IActionResult> CreateConcession()
     {
         ViewBag.ActiveTab = "concessions";
@@ -430,7 +429,6 @@ public class StaffController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    [Authorize(Roles = "Staff,Admin")]
     public async Task<IActionResult> CreateConcession(Combo model)
     {
         model.ComboName = model.ComboName?.Trim() ?? string.Empty;
@@ -450,7 +448,6 @@ public class StaffController : Controller
     }
 
     [HttpGet]
-    [Authorize(Roles = "Staff,Admin")]
     public async Task<IActionResult> EditConcession(int id)
     {
         if (id <= 0)
@@ -471,7 +468,6 @@ public class StaffController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    [Authorize(Roles = "Staff,Admin")]
     public async Task<IActionResult> EditConcession(Combo model)
     {
         model.ComboName = model.ComboName?.Trim() ?? string.Empty;

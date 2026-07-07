@@ -4,9 +4,11 @@ using Cinema_Management.Models;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using System.Globalization;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Cinema_Management.Controllers;
 
+[Authorize(Policy = "AdminOnly")]
 public class AdminController : Controller
 {
     private readonly ApplicationDbContext _context;

@@ -20,6 +20,7 @@ namespace Cinema_Management.Controllers;
 public class AccountController : Controller
 {
     private const string GoogleProvider = "Google";
+    private const string JwtCookieName = "jwt_token";
     private const string GoogleRememberMeSessionKey = "Google_RememberMe";
     private const string RememberMeAuthItemKey = "rememberMe";
     private static readonly HashSet<string> DevelopmentPasswordlessEmails =
@@ -37,6 +38,7 @@ public class AccountController : Controller
     private readonly IHttpClientFactory _httpClientFactory;
     private readonly ApplicationDbContext _context;
     private readonly IEmailService _emailService;
+    private readonly IJwtTokenService _jwtTokenService;
     private readonly ILogger<AccountController> _logger;
 
     public AccountController(
@@ -45,6 +47,7 @@ public class AccountController : Controller
         IHttpClientFactory httpClientFactory,
         ApplicationDbContext context,
         IEmailService emailService,
+        IJwtTokenService jwtTokenService,
         ILogger<AccountController> logger)
     {
         _configuration = configuration;
@@ -52,6 +55,7 @@ public class AccountController : Controller
         _httpClientFactory = httpClientFactory;
         _context = context;
         _emailService = emailService;
+        _jwtTokenService = jwtTokenService;
         _logger = logger;
     }
 
@@ -171,6 +175,8 @@ public class AccountController : Controller
         [FromBody] LoginRequest request,
         CancellationToken cancellationToken)
     {
+        ModelState.Remove(nameof(LoginRequest.CaptchaToken));
+
         if (!ModelState.IsValid)
         {
             return BadRequest(ModelState);
@@ -189,14 +195,20 @@ public class AccountController : Controller
             return Unauthorized("Tài khoản đã bị khóa");
         }
 
+        var token = _jwtTokenService.CreateToken(user, request.RememberMe);
+        AppendJwtCookie(token, request.RememberMe);
+
         return Ok(new
         {
             message = "Đăng nhập thành công",
+            tokenType = "Bearer",
+            token,
             user = new
             {
                 user.UserID,
                 user.FullName,
-                user.Email
+                user.Email,
+                user.Role
             }
         });
     }
@@ -206,8 +218,16 @@ public class AccountController : Controller
     {
         HttpContext.Session.Clear();
         await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+        Response.Cookies.Delete(JwtCookieName);
 
         TempData["AlertSuccess"] = "Bạn đã đăng xuất thành công.";
+        return RedirectToAction("Index", "Home");
+    }
+
+    [HttpGet]
+    public IActionResult AccessDenied()
+    {
+        TempData["AlertError"] = "Bạn không có quyền truy cập chức năng này.";
         return RedirectToAction("Index", "Home");
     }
 
@@ -371,7 +391,7 @@ public IActionResult GoogleRegister()
             return RedirectToAction(nameof(Login));
         }
 
-        // 🔥 1. Xóa bỏ kiểm tra Password và Username (nếu không dùng) để ModelState.IsValid không bị fail vô lý
+        //  1. Xóa bỏ kiểm tra Password và Username (nếu không dùng) để ModelState.IsValid không bị fail vô lý
         ModelState.Remove(nameof(AuthViewModel.Password));
         ModelState.Remove(nameof(AuthViewModel.ConfirmPassword));
         ModelState.Remove(nameof(AuthViewModel.Username));
@@ -772,6 +792,27 @@ public async Task<IActionResult> GoogleCallback(CancellationToken cancellationTo
                 properties)
             .GetAwaiter()
             .GetResult();
+
+        var jwtToken = _jwtTokenService.CreateToken(user, rememberMe);
+        AppendJwtCookie(jwtToken, rememberMe);
+    }
+
+    private void AppendJwtCookie(string token, bool rememberMe = false)
+    {
+        var options = new CookieOptions
+        {
+            HttpOnly = true,
+            Secure = Request.IsHttps,
+            SameSite = SameSiteMode.Lax,
+            IsEssential = true
+        };
+
+        if (rememberMe)
+        {
+            options.Expires = DateTimeOffset.UtcNow.AddDays(30);
+        }
+
+        Response.Cookies.Append(JwtCookieName, token, options);
     }
 
     private static bool IsRememberMeRequested(AuthenticationProperties? properties)
